@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 const ContactPage = () => {
   const searchParams = useSearchParams();
-  const subject = searchParams.get("subject") || "Contact Us";
+  const subject = searchParams?.get("subject") || "Contact Us";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,7 +18,6 @@ const ContactPage = () => {
   const [errors, setErrors] = useState({
     name: false,
     email: false,
-    company: false,
     country: false,
     message: false,
   });
@@ -29,12 +28,11 @@ const ContactPage = () => {
     setErrors({ ...errors, [name]: false });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors = {
       name: formData.name === "",
       email: formData.email === "",
-      company: formData.company === "",
       country: formData.country === "",
       message: formData.message === "",
     };
@@ -42,8 +40,34 @@ const ContactPage = () => {
 
     const hasErrors = Object.values(newErrors).some((error) => error);
     if (!hasErrors) {
-      // Handle form submission
-      console.log("Form submitted", formData);
+      try {
+        const response = await fetch("/api/kontak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            company: formData.company || null, // Perusahaan bisa null
+            country: formData.country,
+            message: formData.message,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Gagal mengirim pesan. , Email anda sudah terdaftar");
+        }
+
+        const result = await response.json();
+        console.log("Pesan berhasil dikirim", result);
+        alert("Pesan berhasil dikirim!");
+        // Reset form setelah sukses
+        setFormData({ name: "", email: "", company: "", country: "", message: "" });
+      } catch (error) {
+        console.error("Terjadi kesalahan:", error);
+        alert("Gagal mengirim pesan.");
+      }
+    } else {
+      alert("Tolong isi semua field yang wajib diisi.");
     }
   };
 
@@ -53,8 +77,7 @@ const ContactPage = () => {
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-6">{subject}</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <p className="text-gray-300 text-lg mb-6 text-center">
-            Selamat datang di halaman kontak kami. Kami adalah perusahaan yang menyediakan produk Frozen Snail Meat berkualitas tinggi untuk kebutuhan Anda. Produk kami diproses secara higienis dan dikemas menggunakan teknologi modern untuk
-            menjaga kesegaran dan nilai gizinya.
+            Selamat datang di halaman kontak kami. Kami adalah perusahaan yang menyediakan produk Frozen Snail Meat berkualitas tinggi untuk kebutuhan Anda. Produk kami diproses secara higienis dan dikemas menggunakan teknologi modern untuk menjaga kesegaran dan nilai gizinya.
           </p>
           <div className="text-gray-300 text-sm mb-6 space-y-2">
             <p>
@@ -83,8 +106,7 @@ const ContactPage = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300">Perusahaan</label>
-            <input type="text" name="company" value={formData.company} onChange={handleChange} className={`mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white ${errors.company ? "border-red-500" : ""}`} />
-            {errors.company && <p className="text-red-500 text-sm">Perusahaan wajib diisi</p>}
+            <input type="text" name="company" value={formData.company} onChange={handleChange} className={`mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white`} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300">Negara</label>
