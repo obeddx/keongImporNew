@@ -20,7 +20,7 @@ export default function HeroSection() {
         }`}
       >
         <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-          PT. KEONG SUMBER MAKMUR
+          PT. KEONG SUMBER MAKMURR
         </h1>
         <p className="text-xl md:text-2xl">Keong Escargot Berkualitas untuk Anda</p>
         <Link
