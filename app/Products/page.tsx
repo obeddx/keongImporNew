@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { client } from "../lib/sanityClient"; // Impor dari lib/sanityClient.ts
 import { urlFor } from "../lib/imageUrlBuilder";
 
