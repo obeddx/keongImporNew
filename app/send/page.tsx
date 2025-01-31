@@ -25,6 +25,12 @@ const SendEmailPage = () => {
     setRecipients([...recipients, { email: "", name: "", company: "" }]);
   };
 
+  const removeRecipient = (index: number) => {
+    const updatedRecipients = recipients.filter((_, i) => i !== index);
+    setRecipients(updatedRecipients);
+  };
+
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -162,6 +168,11 @@ const SendEmailPage = () => {
                     </td>
                     <td className="px-6 py-3">
                       <button type="button" onClick={addRecipient} className="bg-green-600 py-3 px-6 rounded-md hover:bg-green-700">Add</button>
+                      {index > 0 && (
+                        <button type="button" onClick={() => removeRecipient(index)} className="bg-red-600 py-3 px-6 rounded-md hover:bg-red-700">
+                          Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
