@@ -33,7 +33,7 @@ const KeunggulanSection = () => {
   }, []);
 
   return (
-    <section className="relative mb-16 py-16 bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white overflow-hidden">
+    <section className="relative py-16 mb-10 bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white overflow-hidden">
       {/* Background Blur Effect */}
       <div className="absolute inset-0 bg-[url('/background-pattern.svg')] opacity-10"></div>
 

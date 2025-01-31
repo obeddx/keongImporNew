@@ -1,18 +1,13 @@
 import HeroSection from "@/components/HeroSection";
-// import FeaturesSection from "@/components/FeaturesSection";
-import TestimonialSlider from "@/components/TestimonialSlider"; // Import TestimonialSlider
 import KeunggulanSection from "@/components/KeunggulanSection";
-
-// import TestimonialsSection from "@/components/TestimonialsSection";
+import TestimonialSlider from "@/components/TestimonialSlider";
 
 export default function Home() {
   return (
-    <main>
+    <main className="overflow-hidden">
       <HeroSection />
-      {/* <FeaturesSection /> */}
-      <KeunggulanSection/>
+      <KeunggulanSection />
       <TestimonialSlider />
-      {/* <TestimonialsSection /> */}
     </main>
   );
 }

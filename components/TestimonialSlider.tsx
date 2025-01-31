@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -42,8 +42,7 @@ const TestimonialSlider: React.FC = () => {
 
   return (
     <div
-      className="testimonial-slider-container py-20 bg-gradient-to-r from-purple-900 via-indigo-700 to-purple-900 relative"
-      style={{ minHeight: '500px' }}
+      className="-mt-10 py-16 bg-gradient-to-r from-purple-900 via-indigo-700 to-purple-900 relative"
     >
       <h2 className="text-4xl font-extrabold text-center mb-12 text-white tracking-wider">
         Apa Kata Klien Kami
