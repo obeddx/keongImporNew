@@ -1,73 +1,120 @@
 "use client";
 
-import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { client } from "../lib/sanityClient";
+import { urlFor } from "../lib/imageUrlBuilder";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
-interface Article {
-  id: string;
-  title: string;
-  excerpt: string;
-  thumbnail?: string;
-  publishedAt: string;
-}
+// Fungsi untuk memotong string menjadi beberapa kata (contoh 10 kata)
+const generateExcerpt = (content: string, wordLimit: number = 10) => {
+  const words = content.split(" ");
+  if (words.length <= wordLimit) {
+    return content; // Jika jumlah kata sudah sedikit, tidak perlu dipotong
+  }
+  return words.slice(0, wordLimit).join(" ") + "..."; // Menambahkan elipsis jika konten dipotong
+};
 
-const articles: Article[] = [
-  {
-    id: "1",
-    title: "Artikel Pertama",
-    excerpt: "Ringkasan artikel pertama...",
-    thumbnail: "/aboutUs4.jpg",
-    publishedAt: "2024-02-01",
-  },
-  {
-    id: "2",
-    title: "Artikel Kedua",
-    excerpt: "Ringkasan artikel kedua...",
-    thumbnail: "/aboutUs2.jpg",
-    publishedAt: "2024-02-02",
-  },
-  {
-    id: "3",
-    title: "Artikel Ketiga",
-    excerpt: "Ringkasan artikel ketiga...",
-    thumbnail: "/aboutUs1.jpg",
-    publishedAt: "2024-02-03",
-  },
-];
+const ArticlePage = () => {
+  const [articles, setArticles] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [articlesPerPage] = useState(6); // Jumlah artikel per halaman
+  const router = useRouter();
 
-export default function ArticlesPage() {
+  useEffect(() => {
+    client
+      .fetch("*[_type == 'article']{_id, title, content, image, publishedAt}")
+      .then((data) => setArticles(data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  // Menghitung indeks artikel yang akan ditampilkan pada halaman saat ini
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+
+  // Fungsi untuk pindah ke halaman berikutnya
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Fungsi untuk pindah ke halaman sebelumnya
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Hitung total halaman berdasarkan jumlah artikel dan jumlah artikel per halaman
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
+
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 pt-24 pb-20">
-      <div className="max-w-4xl w-full p-8 bg-white shadow-2xl rounded-xl mt-16 mb-16">
-        <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-800">
-          📚 Daftar Artikel Terbaru
-        </h1>
-        <p className="text-center text-gray-600 text-lg mb-6">
-          Temukan berbagai artikel menarik yang bisa memperluas wawasan Anda!
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {articles.map((article) => (
-            <Link key={article.id} href={`/article/${article.id}`}>
-              <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer bg-white hover:scale-105 transform duration-300">
-                {article.thumbnail && (
-                  <div className="relative">
-                    <img
-                      src={article.thumbnail}
-                      alt={article.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300"></div>
-                  </div>
+    <div className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen pt-32 flex justify-center items-center">
+      <motion.div
+        className="bg-gray-800 p-10 rounded-lg shadow-2xl max-w-6xl w-full"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">Latest Articles</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentArticles.map((article) => {
+            // Mengambil excerpt dari konten (hanya 10 kata pertama)
+            const excerpt = generateExcerpt(article.content[0].children.map((block: any) => block.text).join(" "), 10);
+
+            return (
+              <motion.div
+                key={article._id}
+                className="bg-gray-700 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                onClick={() => router.push(`/article/${article._id}`)}
+              >
+                {article.image && (
+                  <img
+                    src={urlFor(article.image).url()}
+                    alt={article.title}
+                    className="w-full h-48 object-cover"
+                  />
                 )}
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">{article.title}</h2>
-                  <p className="text-gray-600 text-md">{article.excerpt}</p>
-                  <p className="text-sm text-gray-500 mt-3">🗓 Diterbitkan: {article.publishedAt}</p>
+                  <h2 className="text-lg font-semibold text-white">{article.title}</h2>
+                  <p className="text-sm text-gray-400 mt-2">{excerpt}</p>
+                  {article.publishedAt && (
+                    <p className="text-xs text-gray-500 mt-4">
+                      {new Date(article.publishedAt).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </Link>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
-      </div>
+
+        {/* Navigasi Pagination */}
+        <div className="mt-8 flex justify-between items-center">
+          <button
+            onClick={prevPage}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-500"
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <p className="text-white">
+            Page {currentPage} of {totalPages}
+          </p>
+          <button
+            onClick={nextPage}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-500"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
-}
+};
+
+export default ArticlePage;

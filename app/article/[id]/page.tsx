@@ -1,70 +1,87 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+"use client";
 
-interface Article {
-  id: string;
-  title: string;
-  content: string;
-  image?: string;
-  publishedAt: string;
-}
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { client } from "../../lib/sanityClient";
+import { urlFor } from "../../lib/imageUrlBuilder";
+import { PortableText } from "@portabletext/react";
+import { motion } from "framer-motion";
 
-const articles: Article[] = [
-  {
-    id: "1",
-    title: "Artikel Pertama",
-    content:
-      "Ini adalah konten lengkap dari Artikel Pertama. Bisa berisi teks panjang, gambar, atau media lainnya.",
-    image: "/aboutUs4.jpg",
-    publishedAt: "2024-02-01",
-  },
-  {
-    id: "2",
-    title: "Artikel Kedua",
-    content:
-      "Ini adalah konten lengkap dari Artikel Kedua. Bisa berisi teks panjang, gambar, atau media lainnya.",
-    image: "/aboutUs2.jpg",
-    publishedAt: "2024-02-02",
-  },
-  {
-    id: "3",
-    title: "Artikel Ketiga",
-    content:
-      "Ini adalah konten lengkap dari Artikel Ketiga. Bisa berisi teks panjang, gambar, atau media lainnya.",
-    image: "/aboutUs1.jpg",
-    publishedAt: "2024-02-03",
-  },
-];
+const ArticleDetail = () => {
+  const [article, setArticle] = useState<any | null>(null);
+  const { id } = useParams();
+  const router = useRouter();
 
-export default function ArticleDetail({ params }: { params: { id: string } }) {
-  const article = articles.find((a) => a.id === params.id);
+  useEffect(() => {
+    if (id) {
+      client
+        .fetch(
+          "*[_type == 'article' && _id == $id]{title, content, image, video, publishedAt}",
+          { id }
+        )
+        .then((data) => setArticle(data[0]))
+        .catch((error) => console.error("Error fetching article data:", error));
+    }
+  }, [id]);
 
-  if (!article) {
-    return notFound();
-  }
+  if (!article) return <div className="text-white text-center">Loading...</div>;
+
+  const videoUrl = article.video?.asset?.url; // Ambil URL video dari field video
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-600 text-white pt-32 pb-32 mt-16">
-      <div className="max-w-2xl w-full p-8 bg-white shadow-xl rounded-lg text-gray-900 transform transition duration-500 hover:scale-105">
-        <h1 className="text-4xl font-extrabold mb-6 text-center">{article.title}</h1>
-        <p className="text-gray-500 text-center mb-4">Diterbitkan pada: {article.publishedAt}</p>
-        {article.image && (
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-72 object-cover rounded-lg mb-6 shadow-lg"
-          />
-        )}
-        <p className="text-gray-700 text-lg leading-relaxed">{article.content}</p>
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/article"
-            className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition transform hover:scale-105 shadow-lg"
+    <motion.div
+      className="pt-20 py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <img
+          src={urlFor(article.image).url()}
+          alt={article.title}
+          className="w-full h-64 object-cover"
+        />
+        <div className="p-8">
+          <motion.h1
+            className="text-3xl font-bold text-white mb-4"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            Kembali ke Daftar Artikel
-          </Link>
+            {article.title}
+          </motion.h1>
+          <p className="text-sm text-gray-400 mb-6">
+            {new Date(article.publishedAt).toLocaleDateString()}
+          </p>
+          <div className="text-gray-300 leading-relaxed">
+            <PortableText value={article.content} />
+          </div>
+
+          {videoUrl && (
+            <div className="mb-6">
+              <video
+                controls
+                className="w-full"
+                src={videoUrl} // Gunakan URL video yang benar
+                type="video/mp4"
+                alt="Article video"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+
+          <motion.button
+            onClick={() => router.push("/article")}
+            className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition transform hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+          >
+            Back to Articles
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
-}
+};
+
+export default ArticleDetail;
