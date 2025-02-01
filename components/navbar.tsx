@@ -24,6 +24,7 @@ export default function Navbar() {
     { label: "Products", href: "/Products" },
     { label: "About Us", href: "/aboutUs" },
     { label: "Contact", href: "/contact" },
+    { label: "Article", href: "/article" }, 
   ];
 
   const handleLogin = () => {
