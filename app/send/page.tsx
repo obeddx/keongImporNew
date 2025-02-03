@@ -226,4 +226,6 @@ const SendEmailPage = () => {
   );
 };
 
-export default SendEmailPage;
+
+export default SendEmailPage;
+
