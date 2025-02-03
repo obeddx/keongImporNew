@@ -41,14 +41,14 @@ export default function Navbar() {
   };
 
   const resetTranslate = () => {
-    const selectElement = document.querySelector(".goog-te-combo");
+    const selectElement = document.querySelector(".goog-te-combo")as HTMLSelectElement;
     if (selectElement) {
       selectElement.value = "en"; // Set ke bahasa default (tidak ada)
       selectElement.dispatchEvent(new Event("change")); // Trigger perubahan bahasa
     }
   };
 
-  // Fungsi untuk load Google Translate dan sembunyikan banner
+// Fungsi untuk load Google Translate dan sembunyikan banner
   const loadGoogleTranslate = () => {
     const script = document.createElement("script");
     script.src =
@@ -59,11 +59,16 @@ export default function Navbar() {
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
         {
-          pageLanguage: "id",
+          pageLanguage: "id", // Set default page language (Indonesian)
+          includedLanguages: "en,id,ko,zh-CN", // Include languages in English
           layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+          autoDisplay: false, // Disable automatic dropdown display
+          multilanguagePage: true,
+          gaTrack: true,
         },
         "google_translate_element"
       );
+
 
       // Menghapus banner Google Translate
       const interval = setInterval(() => {
