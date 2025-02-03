@@ -6,11 +6,13 @@ import { client } from "../../lib/sanityClient";
 import { urlFor } from "../../lib/imageUrlBuilder";
 import { PortableText } from "@portabletext/react";
 import { motion } from "framer-motion";
+import { useTheme } from "@/components/ThemeContext";
 
 const ArticleDetail = () => {
   const [article, setArticle] = useState<any | null>(null);
   const { id } = useParams();
   const router = useRouter();
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (id) {
@@ -24,36 +26,38 @@ const ArticleDetail = () => {
     }
   }, [id]);
 
-  if (!article) return <div className="text-white text-center">Loading...</div>;
+  if (!article) return <div className="text-center">Loading...</div>;
 
-  const videoUrl = article.video?.asset?.url; // Ambil URL video dari field video
+  const videoUrl = article.video?.asset?.url;
 
   return (
     <motion.div
-      className="pt-32 py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen"
+      className={`mt-20 pt-32 py-20 min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <img
-          src={urlFor(article.image).url()}
-          alt={article.title}
-          className="w-full h-64 object-cover"
-        />
+      <div className={`max-w-4xl mx-auto rounded-lg shadow-lg overflow-hidden ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
+        {article.image && (
+          <img
+            src={urlFor(article.image).url()}
+            alt={article.title}
+            className="w-full h-64 object-cover"
+          />
+        )}
         <div className="p-8">
           <motion.h1
-            className="text-3xl font-bold text-white mb-4"
+            className="text-3xl font-bold mb-4"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
             {article.title}
           </motion.h1>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="text-sm mb-6">
             {new Date(article.publishedAt).toLocaleDateString()}
           </p>
-          <div className="text-gray-300 leading-relaxed">
+          <div className="leading-relaxed">
             <PortableText value={article.content} />
           </div>
 
@@ -62,7 +66,7 @@ const ArticleDetail = () => {
               <video
                 controls
                 className="w-full"
-                src={videoUrl} // Gunakan URL video yang benar
+                src={videoUrl}
                 type="video/mp4"
                 alt="Article video"
               >

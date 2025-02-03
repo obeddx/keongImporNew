@@ -8,10 +8,10 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
-import { client } from "../lib/sanityClient"; // Sanity Client
+import { client } from "../lib/sanityClient"; 
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import KeunggulanSection from "@/components/KeunggulanSection";
-import { useTheme } from '@/components/ThemeContext'; // Menggunakan theme context dari folder components
+import { useTheme } from '@/components/ThemeContext';
 
 type AboutData = {
   history: { children: { text: string }[] }[];
@@ -22,7 +22,7 @@ type AboutData = {
 
 const AboutUsPage: React.FC = () => {
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
-  const { isDarkMode, toggleTheme } = useTheme(); // Mendapatkan status mode gelap dari context
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +43,6 @@ const AboutUsPage: React.FC = () => {
         console.error("Error fetching About Us data:", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -56,10 +55,7 @@ const AboutUsPage: React.FC = () => {
   }
 
   return (
-    <div
-      className={`py-20 relative overflow-hidden ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}
-    >
-      {/* Header Section */}
+    <div className={`py-20 relative overflow-hidden ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,11 +71,8 @@ const AboutUsPage: React.FC = () => {
       </motion.div>
 
       <div className="max-w-6xl mx-auto px-4">
-        {/* Sejarah Perusahaan */}
         <section className="mb-16">
-          <h2 className={`text-3xl font-semibold mb-4 ${isDarkMode ? "text-green-400" : "text-green-600"}`}>
-            Sejarah Perusahaan
-          </h2>
+          <h2 className={`text-3xl font-semibold mb-4 ${isDarkMode ? "text-green-400" : "text-green-600"}`}>Sejarah Perusahaan</h2>
           {aboutData.history?.map((block, index) => (
             <p key={index} className={`leading-relaxed text-justify mb-4 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
               {block.children?.map((child) => child.text).join(" ")}
@@ -87,25 +80,18 @@ const AboutUsPage: React.FC = () => {
           ))}
         </section>
 
-        {/* Visi & Misi */}
-        <section className="mb-16">
-          <h2 className={`text-3xl font-semibold mb-4 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}>
-            Visi dan Misi
-          </h2>
-          <div className={`bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ${isDarkMode ? "text-gray-300" : "text-gray-800"}`}>
-            <h3 className={`text-2xl font-semibold mb-2 ${isDarkMode ? "text-green-400" : "text-green-700"}`}>
-              Visi
-            </h3>
+        <section className={`mb-16 p-6 rounded-lg shadow-lg ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
+          <h2 className={`text-3xl font-semibold mb-4 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}>Visi dan Misi</h2>
+          <div>
+            <h3 className={`text-2xl font-semibold mb-2 ${isDarkMode ? "text-green-400" : "text-green-700"}`}>Visi</h3>
             {aboutData.visionMission?.visi?.map((block, index) => (
-              <p key={index} className={`leading-relaxed text-justify mb-4 ${isDarkMode ? "text-gray-300" : "text-white"}`}>
+              <p key={index} className={`leading-relaxed text-justify mb-4 ${isDarkMode ? "text-gray-300" : "text-gray-800"}`}>
                 {block.children?.map((child) => child.text).join(" ")}
               </p>
             ))}
 
-            <h3 className={`text-2xl font-semibold mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
-              Misi
-            </h3>
-            <ul className={`list-disc list-inside space-y-2 ${isDarkMode ? "text-gray-300" : "text-white"}`}>
+            <h3 className={`text-2xl font-semibold mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>Misi</h3>
+            <ul className={`list-disc list-inside space-y-2 ${isDarkMode ? "text-gray-300" : "text-gray-800"}`}>
               {aboutData.visionMission?.misi?.map((block, index) => (
                 <li key={index}>{block.children?.map((child) => child.text).join(" ")}</li>
               ))}
@@ -114,56 +100,18 @@ const AboutUsPage: React.FC = () => {
         </section>
       </div>
 
-      {/* Swiper Section */}
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        navigation
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-      >
+      <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }}>
         {aboutData.images?.map((image, index) => (
           <SwiperSlide key={index}>
             <div className="relative w-full h-[500px] flex items-center justify-center">
-              <Image
-                src={image.url}
-                alt={image.alt}
-                fill
-                className="object-contain"
-                priority
-              />
+              <Image src={image.url} alt={image.alt} fill className="object-contain" priority />
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
 
-      <div><KeunggulanSection></KeunggulanSection></div>
+      <div><KeunggulanSection /></div>
 
-      <div className="max-w-6xl mx-auto px-4 mt-16 text-center">
-        <h2 className={`text-3xl font-semibold mb-6 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}>
-          Kontak Kami
-        </h2>
-        <div className="space-y-4">
-          {[ 
-            { icon: FaMapMarkerAlt, label: "Alamat", text: "Semarang, Indonesia" },
-            { icon: FaEnvelope, label: "Email", text: "keongsumbermakmur@aol.com", link: "mailto:keongsumbermakmur@aol.com" },
-            { icon: FaPhoneAlt, label: "Telepon", text: "+628123279332", link: "tel:+628123279332" },
-          ].map((contact, index) => (
-            <p key={index} className={`flex items-center justify-center gap-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-              <contact.icon className={`${isDarkMode ? "text-green-400" : "text-green-600"}`} />
-              <strong>{contact.label}:</strong>
-              {contact.link ? (
-                <a href={contact.link} className="text-blue-500 hover:text-blue-700">
-                  {contact.text}
-                </a>
-              ) : (
-                contact.text
-              )}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* Tombol toggle theme */}
       <button
         onClick={toggleTheme}
         className="fixed bottom-4 right-4 px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg"

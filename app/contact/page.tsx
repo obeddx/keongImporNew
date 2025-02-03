@@ -53,10 +53,10 @@ const ContactPage = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className={`w-full max-w-3xl ${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"} p-8 rounded-xl shadow-2xl border ${isDarkMode ? "border-gray-700" : "border-gray-300"}`}>
+        className={`w-full max-w-3xl ${isDarkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-black border-gray-400"} p-8 rounded-xl shadow-2xl border`}>
         
         <h1 className={`text-4xl font-bold text-center ${isDarkMode ? "text-white" : "text-black"} mb-6`}>{subject}</h1>
-        <p className={`text-gray-400 text-center mb-6 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>Kami siap membantu Anda! Silakan isi formulir di bawah.</p>
+        <p className={`text-center mb-6 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>Kami siap membantu Anda! Silakan isi formulir di bawah.</p>
         
         <form onSubmit={handleSubmit} className="space-y-5">
           {[ 
@@ -72,7 +72,7 @@ const ContactPage = () => {
                 name={name} 
                 value={formData[name]} 
                 onChange={handleChange} 
-                className={`w-full px-4 py-2 rounded-md ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors[name] ? "border-red-500" : ""}`} 
+                className={`w-full px-4 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-400"} ${errors[name] ? "border-red-500" : ""}`} 
               />
               {errors[name] && <p className="text-red-500 text-sm">{label} wajib diisi</p>}
             </div>
@@ -84,7 +84,7 @@ const ContactPage = () => {
               name="message" 
               value={formData.message} 
               onChange={handleChange} 
-              className={`w-full px-4 py-2 rounded-md ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"} focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.message ? "border-red-500" : ""}`} 
+              className={`w-full px-4 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-400"} ${errors.message ? "border-red-500" : ""}`} 
             />
             {errors.message && <p className="text-red-500 text-sm">Pesan wajib diisi</p>}
           </div>

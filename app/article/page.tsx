@@ -5,20 +5,21 @@ import { client } from "../lib/sanityClient";
 import { urlFor } from "../lib/imageUrlBuilder";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useTheme } from '@/components/ThemeContext';
 
-// Fungsi untuk memotong string menjadi beberapa kata (contoh 10 kata)
 const generateExcerpt = (content: string, wordLimit: number = 10) => {
   const words = content.split(" ");
   if (words.length <= wordLimit) {
-    return content; // Jika jumlah kata sudah sedikit, tidak perlu dipotong
+    return content;
   }
-  return words.slice(0, wordLimit).join(" ") + "..."; // Menambahkan elipsis jika konten dipotong
+  return words.slice(0, wordLimit).join(" ") + "...";
 };
 
 const ArticlePage = () => {
+  const { isDarkMode } = useTheme();
   const [articles, setArticles] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [articlesPerPage] = useState(6); // Jumlah artikel per halaman
+  const [articlesPerPage] = useState(6);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,46 +29,39 @@ const ArticlePage = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  // Menghitung indeks artikel yang akan ditampilkan pada halaman saat ini
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
 
-  // Fungsi untuk pindah ke halaman berikutnya
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
 
-  // Fungsi untuk pindah ke halaman sebelumnya
   const prevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  // Hitung total halaman berdasarkan jumlah artikel dan jumlah artikel per halaman
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
-
   return (
-    <div className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen pt-32 flex justify-center items-center">
+    <div className={`py-20 min-h-screen pt-32 flex justify-center items-center ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       <motion.div
-        className="bg-gray-800 p-10 rounded-lg shadow-2xl max-w-6xl w-full"
+        className={`p-10 rounded-lg shadow-2xl max-w-6xl w-full ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-4xl font-bold text-center mb-8 text-white">Latest Articles</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">Latest Articles</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentArticles.map((article) => {
-            // Mengambil excerpt dari konten (hanya 10 kata pertama)
             const excerpt = generateExcerpt(article.content[0].children.map((block: any) => block.text).join(" "), 10);
-
             return (
               <motion.div
                 key={article._id}
-                className="bg-gray-700 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105"
+                className={`rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105 ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
                 whileHover={{ scale: 1.05 }}
                 onClick={() => router.push(`/article/${article._id}`)}
               >
@@ -79,10 +73,10 @@ const ArticlePage = () => {
                   />
                 )}
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-white">{article.title}</h2>
-                  <p className="text-sm text-gray-400 mt-2">{excerpt}</p>
+                  <h2 className="text-lg font-semibold">{article.title}</h2>
+                  <p className="text-sm mt-2">{excerpt}</p>
                   {article.publishedAt && (
-                    <p className="text-xs text-gray-500 mt-4">
+                    <p className="text-xs mt-4">
                       {new Date(article.publishedAt).toLocaleDateString()}
                     </p>
                   )}
@@ -91,8 +85,6 @@ const ArticlePage = () => {
             );
           })}
         </div>
-
-        {/* Navigasi Pagination */}
         <div className="mt-8 flex justify-between items-center">
           <button
             onClick={prevPage}
@@ -101,7 +93,7 @@ const ArticlePage = () => {
           >
             Previous
           </button>
-          <p className="text-white">
+          <p>
             Page {currentPage} of {totalPages}
           </p>
           <button
