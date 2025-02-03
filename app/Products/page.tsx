@@ -4,9 +4,12 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { client } from "../lib/sanityClient";
 import { urlFor } from "../lib/imageUrlBuilder";
+import { useTheme } from '@/components/ThemeContext'; // Menggunakan theme context dari folder components
+
 
 const ProductPage = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const { isDarkMode } = useTheme(); // Mendapatkan status dark mode dari context
 
   useEffect(() => {
     client
@@ -24,12 +27,16 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen pt-32"> {/* Tambahkan padding-top untuk menghindari navbar */}
+    <div
+      className={`py-20 min-h-screen pt-32 ${
+        isDarkMode ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900" : "bg-gradient-to-r from-white via-gray-100 to-gray-200"
+      }`} // Menerapkan tema gelap atau terang
+    >
       <motion.h1 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-4xl font-bold text-center mb-12 text-white"
+        className={`text-4xl font-bold text-center mb-12 mt-8 ${isDarkMode ? "text-white" : "text-black"}`} // Menyesuaikan warna teks
       >
         Products
       </motion.h1>
@@ -42,7 +49,9 @@ const ProductPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
-              className="bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col transform transition-all hover:shadow-2xl"
+              className={`${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
+              } rounded-lg shadow-lg overflow-hidden flex flex-col transform transition-all hover:shadow-2xl`} // Menerapkan tema gelap atau terang
             >
               <div className="w-full h-64">
                 <img
@@ -52,8 +61,8 @@ const ProductPage = () => {
                 />
               </div>
               <div className="p-6 flex flex-col justify-between flex-grow">
-                <h2 className="text-lg font-semibold text-white">{product.name}</h2>
-                <p className="text-sm text-gray-400 mt-2">{product.description}</p>
+                <h2 className="text-lg font-semibold">{product.name}</h2>
+                <p className="text-sm mt-2">{product.description}</p>
                 <div className="flex flex-col mt-4 space-y-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -76,7 +85,9 @@ const ProductPage = () => {
             </motion.div>
           ))
         ) : (
-          <p className="text-white text-center w-full">No products found.</p>
+          <p className={`text-center w-full ${isDarkMode ? "text-white" : "text-black"}`}>
+            No products found.
+          </p>
         )}
       </div>
     </div>

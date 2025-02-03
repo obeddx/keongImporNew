@@ -30,7 +30,7 @@ const ArticleDetail = () => {
 
   return (
     <motion.div
-      className="pt-20 py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen"
+      className="pt-32 py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}

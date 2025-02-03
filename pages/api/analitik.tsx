@@ -1,6 +1,6 @@
 import { BetaAnalyticsDataClient, protos } from '@google-analytics/data';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import path from 'path';
+// import path from 'path';
 import process from 'process';
 
 const propertyId = '475903951';

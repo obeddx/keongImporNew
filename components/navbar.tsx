@@ -2,20 +2,29 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { ThemeContext } from "@/components/ThemeContext"; // Import ThemeContext
+
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Mengambil toggleTheme dan theme dari ThemeContext
+  const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
   useEffect(() => {
+    // Mark the component as client-side after it mounts
+    setIsClient(true);
+
     const adminStatus = localStorage.getItem("isAdmin");
     if (adminStatus === "true") {
       setIsAdmin(true);
     }
 
-    // Load Google Translate setelah komponen dimuat
+    // Load Google Translate after component is mounted
     loadGoogleTranslate();
   }, []);
 
@@ -24,7 +33,7 @@ export default function Navbar() {
     { label: "Products", href: "/Products" },
     { label: "About Us", href: "/aboutUs" },
     { label: "Contact", href: "/contact" },
-    { label: "Article", href: "/article" }, 
+    { label: "Article", href: "/article" },
   ];
 
   const handleLogin = () => {
@@ -41,14 +50,14 @@ export default function Navbar() {
   };
 
   const resetTranslate = () => {
-    const selectElement = document.querySelector(".goog-te-combo")as HTMLSelectElement;
+    const selectElement = document.querySelector(".goog-te-combo");
     if (selectElement) {
       selectElement.value = "en"; // Set ke bahasa default (tidak ada)
       selectElement.dispatchEvent(new Event("change")); // Trigger perubahan bahasa
     }
   };
 
-// Fungsi untuk load Google Translate dan sembunyikan banner
+  // Fungsi untuk load Google Translate dan sembunyikan banner
   const loadGoogleTranslate = () => {
     const script = document.createElement("script");
     script.src =
@@ -69,7 +78,6 @@ export default function Navbar() {
         "google_translate_element"
       );
 
-
       // Menghapus banner Google Translate
       const interval = setInterval(() => {
         const banner = document.querySelector(".goog-te-banner-frame");
@@ -81,8 +89,10 @@ export default function Navbar() {
     };
   };
 
+  if (!isClient) return null; // Prevent rendering on the server side
+
   return (
-    <nav className="bg-gray-900 text-white fixed w-full top-0 left-0 z-50 shadow-lg pt-7"> {/* Menambahkan mt-8 untuk margin atas */}
+    <nav className="bg-gray-900 text-white fixed w-full top-0 left-0 z-50 shadow-lg pt-7">
       <div className="max-w-1xl mx-auto px-1 py-6 flex items-center justify-between px-5">
         <div className="text-2xl font-bold">
           <Link href="/" className="hover:text-blue-500 transition duration-300">
@@ -108,7 +118,6 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* Link untuk Send Email hanya untuk admin */}
           {isAdmin && (
             <Link
               href="/send"
@@ -143,6 +152,14 @@ export default function Navbar() {
           className="ml-6 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:scale-105 transition-transform duration-300 shadow-md"
         >
           {isAdmin ? "Logout" : "Login"}
+        </button>
+
+        {/* Tombol Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="ml-6 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition"
+        >
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
         </button>
       </div>
     </nav>

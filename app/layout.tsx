@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeContext"; // Impor ThemeProvider dari konteks
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,17 +44,18 @@ export default function RootLayout({
           }}
         />
       </head>
-      
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-
-        {/* Menambahkan TestimonialSlider di sini */}
-        
-        
-        <Footer />
+        <ThemeProvider> {/* Menambahkan ThemeProvider untuk mengakses tema */}
+          <Navbar />
+          {children} {/* Render konten utama aplikasi */}
+          
+          {/* Menambahkan TestimonialSlider atau komponen lainnya */}
+          
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
