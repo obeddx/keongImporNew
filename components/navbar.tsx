@@ -5,23 +5,36 @@ import { usePathname, useRouter } from "next/navigation";
 import { useContext, useState, useEffect } from "react";
 import { ThemeContext } from "@/components/ThemeContext";
 
+// Deklarasi global untuk Google Translate API agar tidak dianggap 'any'
+declare global {
+  interface Window {
+    google?: {
+      translate?: {
+        TranslateElement: new (
+          options: object,
+          containerId: string
+        ) => void;
+      };
+    };
+    googleTranslateElementInit?: () => void;
+  }
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // State untuk toggle menu
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
   useEffect(() => {
     setIsClient(true);
-
     const adminStatus = localStorage.getItem("isAdmin");
     if (adminStatus === "true") {
       setIsAdmin(true);
     }
-
     loadGoogleTranslate();
   }, []);
 
@@ -47,7 +60,9 @@ export default function Navbar() {
   };
 
   const resetTranslate = () => {
-    const selectElement = document.querySelector(".goog-te-combo");
+    const selectElement = document.querySelector<HTMLSelectElement>(
+      ".goog-te-combo"
+    );
     if (selectElement) {
       selectElement.value = "en";
       selectElement.dispatchEvent(new Event("change"));
@@ -55,35 +70,41 @@ export default function Navbar() {
   };
 
   const loadGoogleTranslate = () => {
-    const script = document.createElement("script");
-    script.src =
-      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
-    document.body.appendChild(script);
-
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "id",
-          includedLanguages: "en,id,ko,zh-CN",
-          layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL,
-          autoDisplay: false,
-          multilanguagePage: true,
-          gaTrack: true,
-        },
-        "google_translate_element"
-      );
-
-      const interval = setInterval(() => {
-        const banner = document.querySelector(".goog-te-banner-frame");
-        if (banner) {
-          banner.style.display = "none";
-          clearInterval(interval);
+    if (typeof window !== "undefined" && !window.google) {
+      const script = document.createElement("script");
+      script.src =
+        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+  
+      window.googleTranslateElementInit = () => {
+        if (window.google?.translate) {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: "id",
+              includedLanguages: "en,id,ko,zh-CN",
+              layout: 1, // 1 untuk HORIZONTAL layout
+              autoDisplay: false,
+              multilanguagePage: true,
+              gaTrack: true,
+            },
+            "google_translate_element"
+          );
+  
+          const interval = setInterval(() => {
+            const banner = document.querySelector(
+              ".goog-te-banner-frame"
+            ) as HTMLIFrameElement | null;
+            if (banner) {
+              banner.style.display = "none";
+              clearInterval(interval);
+            }
+          }, 100);
         }
-      }, 100);
-    };
+      };
+    }
   };
-
+  
   if (!isClient) return null;
 
   return (
@@ -96,10 +117,7 @@ export default function Navbar() {
         </div>
 
         {/* Tombol Hamburger */}
-        <button
-          className="md:hidden text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
+        <button className="md:hidden text-white" onClick={() => setMenuOpen(!menuOpen)}>
           ☰
         </button>
 
@@ -124,25 +142,10 @@ export default function Navbar() {
 
           {isAdmin && (
             <>
-              <Link
-                href="/send"
-                className={`block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${
-                  pathname === "/send"
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-                    : "text-gray-300"
-                }`}
-              >
+              <Link href="/send" className="text-gray-300 hover:text-white">
                 Send Email
               </Link>
-
-              <Link
-                href="/analisa"
-                className={`block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-green-600 hover:text-white ${
-                  pathname === "/analisa"
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-                    : "text-gray-300"
-                }`}
-              >
+              <Link href="/analisa" className="text-gray-300 hover:text-white">
                 Analisa
               </Link>
             </>

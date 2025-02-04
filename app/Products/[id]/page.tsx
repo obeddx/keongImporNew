@@ -33,8 +33,9 @@ interface Product {
 const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null); // Use the defined Product type
   const [certificationUrl, setCertificationUrl] = useState<string | null>(null);
-  const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
+  const id = params?.id as string | undefined; // Memastikan ID tidak rusak  const router = useRouter();
   const { isDarkMode, toggleTheme } = useTheme(); // Menggunakan themeContext
 
   useEffect(() => {

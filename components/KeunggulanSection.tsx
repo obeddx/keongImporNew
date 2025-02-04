@@ -6,20 +6,28 @@ import { client } from "../app/lib/sanityClient";
 import { Star, Lightbulb, Leaf } from "lucide-react";
 import { useTheme } from "@/components/ThemeContext"; // Import context tema
 
-const iconMapping = {
+// Mapping ikon yang tersedia
+const iconMapping: Record<string, React.ComponentType<{ className?: string }>> = {
   Star: Star,
   Lightbulb: Lightbulb,
   Leaf: Leaf,
 };
 
+interface Advantage {
+  title: string;
+  description: string;
+  icon: keyof typeof iconMapping; // Hanya menerima nilai yang ada di iconMapping
+  imageUrl: string;
+}
+
 const KeunggulanSection = () => {
-  const [advantages, setAdvantages] = useState([]);
+  const [advantages, setAdvantages] = useState<Advantage[]>([]);
   const { isDarkMode } = useTheme(); // Mendapatkan status mode gelap
 
   useEffect(() => {
     const fetchAdvantages = async () => {
       try {
-        const data = await client.fetch(`
+        const data: Advantage[] = await client.fetch(`
           *[_type == "keunggulan"] {
             title,
             description,
@@ -58,7 +66,7 @@ const KeunggulanSection = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {advantages.map((advantage, index) => {
-            const IconComponent = iconMapping[advantage.icon] || Star;
+            const IconComponent = iconMapping[advantage.icon] || Star; // ✅ Fix TypeScript issue
             return (
               <div
                 key={index}
@@ -85,9 +93,7 @@ const KeunggulanSection = () => {
                         : "text-blue-600 group-hover:text-green-500"
                     } transition duration-300`}
                   />
-                  <h3 className="text-xl font-semibold ml-3">
-                    {advantage.title}
-                  </h3>
+                  <h3 className="text-xl font-semibold ml-3">{advantage.title}</h3>
                 </div>
                 <p
                   className={`${
