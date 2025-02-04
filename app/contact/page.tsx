@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react"; // Tambahkan Suspense di sini
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTheme } from '@/components/ThemeContext'; // Menggunakan theme context dari folder components
 
-const ContactPage = () => {
+const ContactPageContent = () => {
   const searchParams = useSearchParams();
   const subject = searchParams?.get("subject") || "Contact Us";
   const { isDarkMode } = useTheme(); // Mendapatkan status mode gelap dari context
@@ -46,7 +46,6 @@ const ContactPage = () => {
       setFormData({ name: "", email: "", company: "", country: "", message: "" });
     }
   };
-  
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"} flex items-center justify-center px-6 py-16 pt-32`}>
@@ -60,24 +59,23 @@ const ContactPage = () => {
         <p className={`text-center mb-6 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>Kami siap membantu Anda! Silakan isi formulir di bawah.</p>
         
         <form onSubmit={handleSubmit} className="space-y-5">
-        {[
-  { label: "Nama", name: "name" },
-  { label: "Email", name: "email", type: "email" },
-  { label: "Perusahaan", name: "company", required: false },
-  { label: "Negara", name: "country" },
-].map(({ label, name, type = "text", required = true }) => (
-  <div key={name}>
-    <label className={`block ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-1`}>{label}</label>
-    <input 
-      type={type} 
-      name={name}
-      onChange={handleChange}
-      className={`w-full px-4 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-400"} ${errors[name as keyof typeof errors] ? "border-red-500" : ""}`} // ✅ Perbaikan
-      required={required}
-    />
-  </div>
-))}
-
+          {[
+            { label: "Nama", name: "name" },
+            { label: "Email", name: "email", type: "email" },
+            { label: "Perusahaan", name: "company", required: false },
+            { label: "Negara", name: "country" },
+          ].map(({ label, name, type = "text", required = true }) => (
+            <div key={name}>
+              <label className={`block ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-1`}>{label}</label>
+              <input 
+                type={type} 
+                name={name}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${isDarkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-400"} ${errors[name as keyof typeof errors] ? "border-red-500" : ""}`}
+                required={required}
+              />
+            </div>
+          ))}
 
           <div>
             <label className={`block ${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-1`}>Pesan</label>
@@ -100,6 +98,14 @@ const ContactPage = () => {
         </form>
       </motion.div>
     </div>
+  );
+};
+
+const ContactPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContactPageContent />
+    </Suspense>
   );
 };
 
