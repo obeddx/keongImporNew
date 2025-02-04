@@ -1,12 +1,12 @@
 import { BetaAnalyticsDataClient, protos } from '@google-analytics/data';
 import type { NextApiRequest, NextApiResponse } from 'next';
 // import path from 'path';
-import process from 'process';
+// import process from 'process';
 
 const propertyId = '475908908';
 
 // Tetapkan path kredensial
-const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');
+// const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');
 
 const analyticsDataClient = new BetaAnalyticsDataClient();
 

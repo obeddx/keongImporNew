@@ -15,8 +15,17 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Interface untuk data yang diterima dari form
+interface FormData {
+  name: string;
+  email: string;
+  company?: string;
+  country: string;
+  message: string;
+}
+
 // Fungsi untuk mengirimkan email
-const sendEmail = (formData: any) => {
+const sendEmail = (formData: FormData) => {
   const mailOptions = {
     from: process.env.EMAIL_USER, // Ganti dengan email pengirim
     to: 'cobaweb575@gmail.com', // Ganti dengan email penerima
@@ -32,7 +41,6 @@ const sendEmail = (formData: any) => {
     }
   });
 };
-
 
 // API handler
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

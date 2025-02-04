@@ -9,7 +9,6 @@ import "swiper/css/autoplay";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
 import { client } from "../lib/sanityClient"; 
-import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
 import KeunggulanSection from "@/components/KeunggulanSection";
 import { useTheme } from '@/components/ThemeContext';
 

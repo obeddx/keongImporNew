@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+ // Import komponen Image dari next/image
+ import Image from "next/image"; // Import komponen Image dari next/image
 import { useTheme } from '@/components/ThemeContext'; // Menggunakan theme context dari folder components
 import Link from 'next/link';
 export default function HeroSection() {
@@ -14,9 +16,10 @@ export default function HeroSection() {
 
   return (
     <section
-      className={`flex items-center justify-between py-20 px-4 transition duration-1000 ${
-        isDarkMode ? 'bg-black text-white' : 'bg-white text-black'
-      }`}
+    className={`flex items-center justify-between py-20 px-4 transition duration-1000
+      ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}
+      flex-col md:flex-row
+    `}
     >
       {/* Bagian Teks */}
       <div
@@ -42,11 +45,14 @@ export default function HeroSection() {
           isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         }`}
       >
-        <img
+        <Image
           src="/contoh.jpg" // Ganti dengan path gambar produk Anda
           alt="Keong Escargot"
+          width={300}
+          height={300}
           className="w-full h-auto object-cover rounded-lg shadow-lg"
         />
+        
       </div>
     </section>
   );

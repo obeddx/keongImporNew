@@ -34,9 +34,6 @@ export default function Dashboard() {
   const outerContainerClass = isDarkMode
     ? "bg-gray-900 text-white"
     : "bg-gray-100 text-gray-900";
-  const innerContainerClass = isDarkMode
-    ? "bg-gray-800 text-white"
-    : "bg-white text-black";
   const tableClass = isDarkMode
     ? "table-auto w-full bg-gray-800 text-white shadow-md rounded-lg"
     : "table-auto w-full bg-white shadow-md rounded-lg";
@@ -51,7 +48,7 @@ export default function Dashboard() {
     : "px-6 py-3 text-left text-black bg-gray-200";
 
   return (
-    <div className={`${outerContainerClass} pt-64 pb-64 flex items-center justify-center min-h-screen p-6`}>
+    <div className={`${outerContainerClass} pt-60 pb-6 flex items-center justify-center min-h-screen p-6`}>
       {loading ? (
         <p className={`${loadingTextClass}`}>Loading data...</p>
       ) : (
@@ -76,7 +73,11 @@ export default function Dashboard() {
                     <td className="p-4">{data.city}</td>
                     <td className="p-4">{data.region}</td>
                     <td className="p-4">{data.activeUsers}</td>
-                    <td className="p-4">{data.pagePath}</td>
+                    <td className="p-4">
+          {data.pagePath.length > 20
+            ? `${data.pagePath.slice(0, 20)}...`
+            : data.pagePath}
+        </td>
                     <td className="p-4">{data.platform}</td>
                   </tr>
                 ))

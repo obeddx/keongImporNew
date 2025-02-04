@@ -5,10 +5,23 @@ import { motion } from "framer-motion";
 import { client } from "../lib/sanityClient";
 import { urlFor } from "../lib/imageUrlBuilder";
 import { useTheme } from '@/components/ThemeContext'; // Menggunakan theme context dari folder components
+import Image from "next/image"; // Import Image from next/image for optimization
 
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  image: {
+    _type: string;
+    asset: {
+      _type: string;
+      _ref: string;
+    };
+  };
+}
 
 const ProductPage = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]); // Use the Product type here
   const { isDarkMode } = useTheme(); // Mendapatkan status dark mode dari context
 
   useEffect(() => {
@@ -32,7 +45,7 @@ const ProductPage = () => {
         isDarkMode ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900" : "bg-gradient-to-r from-white via-gray-100 to-gray-200"
       }`} // Menerapkan tema gelap atau terang
     >
-      <motion.h1 
+      <motion.h1
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -53,10 +66,12 @@ const ProductPage = () => {
                 isDarkMode ? "bg-gray-800 text-white" : "bg-white text-black"
               } rounded-lg shadow-lg overflow-hidden flex flex-col transform transition-all hover:shadow-2xl`} // Menerapkan tema gelap atau terang
             >
-              <div className="w-full h-64">
-                <img
+              <div className="w-full h-64 relative">
+                <Image
                   src={urlFor(product.image).url()}
                   alt={product.name}
+                  width={640} // Specify width for optimization
+                  height={256} // Specify height for optimization
                   className="w-full h-full object-cover"
                 />
               </div>

@@ -6,9 +6,32 @@ import { client } from "../../lib/sanityClient";
 import { urlFor } from "../../lib/imageUrlBuilder";
 import { motion } from "framer-motion";
 import { useTheme } from "@/components/ThemeContext"; // Path absolut (benar)
+import Image from "next/image"; // Import Image component
+
+// Define a type for the Product object based on the fetched data
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  image: {
+    _type: string;
+    asset: {
+      _type: string;
+      _ref: string;
+    };
+  };
+  size: string;
+  weight: string;
+  packaging: string;
+  certification: {
+    asset: {
+      url: string;
+    };
+  };
+}
 
 const ProductDetail = () => {
-  const [product, setProduct] = useState<any | null>(null);
+  const [product, setProduct] = useState<Product | null>(null); // Use the defined Product type
   const [certificationUrl, setCertificationUrl] = useState<string | null>(null);
   const { id } = useParams();
   const router = useRouter();
@@ -92,9 +115,12 @@ const ProductDetail = () => {
               animate={{ scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <img
+              {/* Replaced <img> with <Image> */}
+              <Image
                 src={urlFor(product.image).url()}
                 alt={product.name}
+                width={500} // Adjust width
+                height={500} // Adjust height
                 className="w-full h-full object-contain"
               />
             </motion.div>

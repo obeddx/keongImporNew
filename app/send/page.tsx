@@ -4,18 +4,32 @@ import { sendContactForm } from "../lib/api";
 import * as XLSX from "xlsx";
 import { useTheme } from "@/components/ThemeContext";
 
+// Define interfaces for type safety
+interface FailureDetail {
+  email: string;
+  reason: string;
+}
+
+interface RecipientData {
+  Name: string;
+  Company: string;
+  Email: string;
+}
+
 const SendEmailPage = () => {
   const { isDarkMode } = useTheme();
 
-  const [recipients, setRecipients] = useState([{ email: "", name: "", company: "" }]);
+  const [recipients, setRecipients] = useState<{ email: string; name: string; company: string }[]>([
+    { email: "", name: "", company: "" },
+  ]);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [fileErrorMessage, setFileErrorMessage] = useState(""); // State untuk error file upload
-  const [failureCount, setFailureCount] = useState(0); // Menyimpan jumlah kegagalan
-  const [failureDetails, setFailureDetails] = useState<any[]>([]); // Menyimpan detail kegagalan
-  const [successCount, setSuccessCount] = useState(0); // Menyimpan jumlah keberhasilan pengiriman email
+  const [fileErrorMessage, setFileErrorMessage] = useState(""); // State for file upload error
+  const [failureCount, setFailureCount] = useState(0); // Track failure count
+  const [failureDetails, setFailureDetails] = useState<FailureDetail[]>([]); // Track failure details
+  const [successCount, setSuccessCount] = useState(0); // Track success count
 
   const handleRecipientChange = (index: number, field: "email" | "name" | "company", value: string) => {
     const updatedRecipients = [...recipients];
@@ -45,22 +59,21 @@ const SendEmailPage = () => {
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const jsonData = XLSX.utils.sheet_to_json<RecipientData>(worksheet);
 
-      if (!jsonData.every((row: any) => row.Name && row.Company && row.Email)) {
+      if (!jsonData.every((row) => row.Name && row.Company && row.Email)) {
         setFileErrorMessage("Format file salah. Pastikan ada kolom Name, Company, dan Email.");
         return;
       }
 
-      const newRecipients = jsonData.map((row: any) => ({
+      const newRecipients = jsonData.map((row) => ({
         name: row.Name,
         company: row.Company,
         email: row.Email,
       }));
 
-      // Memasukkan data dari file langsung ke indeks 0 (menghapus data sebelumnya)
       setRecipients(newRecipients);
-      setFileErrorMessage(""); // Reset errorMessage jika file valid
+      setFileErrorMessage(""); // Reset errorMessage if the file is valid
     };
 
     reader.readAsArrayBuffer(file);
@@ -78,13 +91,11 @@ const SendEmailPage = () => {
       const personalizedEmails = recipients.map((recipient) => ({
         email: recipient.email,
         subject: emailSubject,
-        message: emailMessage
-          .replace("{name}", recipient.name)
-          .replace("{company}", recipient.company),
+        message: emailMessage.replace("{name}", recipient.name).replace("{company}", recipient.company),
       }));
 
-      let failureList: any[] = [];
-      let success = 0;
+      const failureList: FailureDetail[] = []; // changed to const
+      let success = 1;
 
       for (const email of personalizedEmails) {
         try {
@@ -103,13 +114,13 @@ const SendEmailPage = () => {
         }
       }
 
-      setSuccessCount(success); // Menyimpan jumlah email yang berhasil dikirim
+      setSuccessCount(success); // Track successful email sends
       if (failureList.length > 0) {
         setFailureDetails(failureList);
         setFailureCount(failureList.length);
         setErrorMessage("Beberapa email gagal dikirim.");
       } else {
-        setSuccessMessage("Semua email berhasil dikirim!");
+        setSuccessMessage(`Semua email berhasil dikirim! (${successCount} email berhasil)`);
       }
 
       // Reset form state
@@ -126,58 +137,26 @@ const SendEmailPage = () => {
     }
   };
 
-  // Kelas untuk mode light/dark. Anda bisa menyesuaikannya.
-  const outerContainerClass = isDarkMode
-    ? "bg-gray-900 text-white"
-    : "bg-gray-100 text-gray-900";
-  const innerContainerClass = isDarkMode
-    ? "bg-gray-800"
-    : "bg-white";
-  const inputClass = isDarkMode
-    ? "w-full p-3 bg-gray-700 border border-gray-600 rounded-md"
-    : "w-full p-3 bg-gray-200 border border-gray-300 rounded-md";
-  const buttonClass = isDarkMode
-    ? "bg-green-600 py-3 px-6 rounded-md hover:bg-green-700"
-    : "bg-green-500 py-3 px-6 rounded-md hover:bg-green-600";
-  const deleteButtonClass = isDarkMode
-    ? "bg-red-600 py-3 px-6 rounded-md hover:bg-red-700"
-    : "bg-red-500 py-3 px-6 rounded-md hover:bg-red-600";
-  const submitButtonClass = isDarkMode
-    ? "bg-blue-600 py-3 px-6 rounded-md hover:bg-blue-700"
-    : "bg-blue-500 py-3 px-6 rounded-md hover:bg-blue-600";
-
-  // Variabel kelas untuk header tabel <th> agar tulisan menjadi putih pada light mode
-  const headerThClass = isDarkMode
-    ? "px-6 py-3 text-left"
-    : "px-6 py-3 text-left text-white";
+  const outerContainerClass = isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900";
+  const innerContainerClass = isDarkMode ? "bg-gray-800" : "bg-white";
+  const inputClass = isDarkMode ? "w-full p-3 bg-gray-700 border border-gray-600 rounded-md" : "w-full p-3 bg-gray-200 border border-gray-300 rounded-md";
+  const buttonClass = isDarkMode ? "bg-green-600 py-3 px-6 rounded-md hover:bg-green-700" : "bg-green-500 py-3 px-6 rounded-md hover:bg-green-600";
+  const deleteButtonClass = isDarkMode ? "bg-red-600 py-3 px-6 rounded-md hover:bg-red-700" : "bg-red-500 py-3 px-6 rounded-md hover:bg-red-600";
+  const submitButtonClass = isDarkMode ? "bg-blue-600 py-3 px-6 rounded-md hover:bg-blue-700" : "bg-blue-500 py-3 px-6 rounded-md hover:bg-blue-600";
+  const headerThClass = isDarkMode ? "px-6 py-3 text-left" : "px-6 py-3 text-left text-white";
 
   return (
-    // Menambahkan kelas 'pt-64 pb-64' untuk memberikan jarak antara navbar dan konten halaman
     <div className={`${outerContainerClass} pt-64 pb-64 flex items-center justify-center min-h-screen p-6`}>
       <div className={`${innerContainerClass} w-full max-w-6xl p-8 rounded-lg shadow-lg`}>
-        {/* Header */}
         <div className="flex justify-center items-center mb-6">
           <h1 className="text-3xl font-bold text-center">Send Personalized Emails</h1>
         </div>
 
-        {/* Tampilkan pesan error untuk file XLSX di atas form */}
-        {fileErrorMessage && (
-          <div className="text-red-500 mb-4">
-            {fileErrorMessage}
-          </div>
-        )}
+        {fileErrorMessage && <div className="text-red-500 mb-4">{fileErrorMessage}</div>}
 
-        {/* Upload File Section */}
         <div className="mb-6">
-          <label className="block text-lg font-medium mb-2">
-            Upload Excel/CSV (Alternatif)
-          </label>
-          <input
-            type="file"
-            accept=".csv,.xlsx"
-            onChange={handleFileUpload}
-            className={`${inputClass}`}
-          />
+          <label className="block text-lg font-medium mb-2">Upload Excel/CSV (Alternatif)</label>
+          <input type="file" accept=".csv,.xlsx" onChange={handleFileUpload} className={`${inputClass}`} />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -198,9 +177,7 @@ const SendEmailPage = () => {
                       <input
                         type="text"
                         value={recipient.name}
-                        onChange={(e) =>
-                          handleRecipientChange(index, "name", e.target.value)
-                        }
+                        onChange={(e) => handleRecipientChange(index, "name", e.target.value)}
                         className={inputClass}
                         placeholder="Name"
                         required
@@ -210,9 +187,7 @@ const SendEmailPage = () => {
                       <input
                         type="text"
                         value={recipient.company}
-                        onChange={(e) =>
-                          handleRecipientChange(index, "company", e.target.value)
-                        }
+                        onChange={(e) => handleRecipientChange(index, "company", e.target.value)}
                         className={inputClass}
                         placeholder="Company"
                         required
@@ -222,9 +197,7 @@ const SendEmailPage = () => {
                       <input
                         type="email"
                         value={recipient.email}
-                        onChange={(e) =>
-                          handleRecipientChange(index, "email", e.target.value)
-                        }
+                        onChange={(e) => handleRecipientChange(index, "email", e.target.value)}
                         className={inputClass}
                         placeholder="Email"
                         required
@@ -235,11 +208,7 @@ const SendEmailPage = () => {
                         Add
                       </button>
                       {index > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => removeRecipient(index)}
-                          className={deleteButtonClass}
-                        >
+                        <button type="button" onClick={() => removeRecipient(index)} className={deleteButtonClass}>
                           Delete
                         </button>
                       )}
@@ -252,13 +221,7 @@ const SendEmailPage = () => {
 
           <div>
             <label className="block text-lg font-medium">Subject</label>
-            <input
-              type="text"
-              value={emailSubject}
-              onChange={(e) => setEmailSubject(e.target.value)}
-              className={inputClass}
-              required
-            />
+            <input type="text" value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} className={inputClass} required />
           </div>
 
           <div>
@@ -266,46 +229,42 @@ const SendEmailPage = () => {
             <textarea
               value={emailMessage}
               onChange={(e) => setEmailMessage(e.target.value)}
-              className={`${inputClass} min-h-[150px]`}
+              className={`${inputClass} h-40`}
+              placeholder="Email message with {name} and {company} placeholders"
               required
             />
           </div>
 
-          <button type="submit" className={submitButtonClass}>
-            Send Emails
-          </button>
-        </form>
-
-        {/* Tampilkan status pengiriman di bawah tombol kirim */}
-        {(successMessage || errorMessage) && (
-          <div className="mt-6">
-            {successMessage && (
-              <div className="text-green-500">{successMessage}</div>
-            )}
-            {errorMessage && (
-              <div className="text-red-500">
-                {errorMessage}
-                {failureCount > 0 && (
-                  <div className="mt-4">
-                    <h3 className="font-bold">Detail Kegagalan:</h3>
-                    <ul>
-                      {failureDetails.map((failure, index) => (
-                        <li key={index}>
-                          <strong>{failure.email}</strong>: {failure.reason}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-            {successCount > 0 && (
-              <div className="mt-4 text-green-500">
-                <strong>{successCount}</strong> email berhasil dikirim.
-              </div>
-            )}
+          <div className="flex justify-between">
+            <button type="submit" className={submitButtonClass}>
+              Send Emails
+            </button>
+            {successMessage && <div className="text-green-500">{successMessage}</div>}
+            {errorMessage && <div className="text-red-500">{errorMessage}</div>}
           </div>
-        )}
+
+          {failureCount > 0 && (
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold">Failed Emails ({failureCount})</h2>
+              <table className="table-auto w-full text-sm border-collapse border border-gray-700 mt-4">
+                <thead>
+                  <tr className="bg-gray-700">
+                    <th className={headerThClass}>Email</th>
+                    <th className={headerThClass}>Reason</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {failureDetails.map((detail, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-3">{detail.email}</td>
+                      <td className="px-6 py-3">{detail.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   );

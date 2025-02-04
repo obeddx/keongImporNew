@@ -7,9 +7,18 @@ import { urlFor } from "../../lib/imageUrlBuilder";
 import { PortableText } from "@portabletext/react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/components/ThemeContext";
+import Image from "next/image";
+
+interface Article {
+  title: string;
+  content: { _type: string; children: Array<{ _type: string; text: string }> }; // Specific content structure for PortableText
+  image: { asset: { _ref: string } }; // Adjust image structure based on your CMS
+  video: { asset: { url: string } } | null;
+  publishedAt: string;
+}
 
 const ArticleDetail = () => {
-  const [article, setArticle] = useState<any | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const { id } = useParams();
   const router = useRouter();
   const { isDarkMode } = useTheme();
@@ -39,9 +48,11 @@ const ArticleDetail = () => {
     >
       <div className={`max-w-4xl mx-auto rounded-lg shadow-lg overflow-hidden ${isDarkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-black"}`}>
         {article.image && (
-          <img
+          <Image
             src={urlFor(article.image).url()}
             alt={article.title}
+            width={800} // Provide a specific width
+            height={400} // Provide a specific height
             className="w-full h-64 object-cover"
           />
         )}

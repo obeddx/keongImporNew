@@ -6,6 +6,7 @@ import { urlFor } from "../lib/imageUrlBuilder";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTheme } from '@/components/ThemeContext';
+import Image from 'next/image';
 
 const generateExcerpt = (content: string, wordLimit: number = 10) => {
   const words = content.split(" ");
@@ -15,9 +16,17 @@ const generateExcerpt = (content: string, wordLimit: number = 10) => {
   return words.slice(0, wordLimit).join(" ") + "...";
 };
 
+interface Article {
+  _id: string;
+  title: string;
+  content: { children: { text: string }[] }[];
+  image: string;
+  publishedAt: string;
+}
+
 const ArticlePage = () => {
   const { isDarkMode } = useTheme();
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const router = useRouter();
@@ -57,7 +66,10 @@ const ArticlePage = () => {
         <h1 className="text-4xl font-bold text-center mb-8">Latest Articles</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentArticles.map((article) => {
-            const excerpt = generateExcerpt(article.content[0].children.map((block: any) => block.text).join(" "), 10);
+            const excerpt = generateExcerpt(
+              article.content[0]?.children?.map((block) => block.text).join(" ") || "",
+              10
+            );
             return (
               <motion.div
                 key={article._id}
@@ -66,9 +78,11 @@ const ArticlePage = () => {
                 onClick={() => router.push(`/article/${article._id}`)}
               >
                 {article.image && (
-                  <img
-                    src={urlFor(article.image).url()}
+                  <Image
+                    src={urlFor(article.image).url() || ''}
                     alt={article.title}
+                    width={500}
+                    height={200}
                     className="w-full h-48 object-cover"
                   />
                 )}

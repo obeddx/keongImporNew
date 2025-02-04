@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeContext"; // Impor ThemeProvider dari konteks
+import Script from "next/script"; // Import Script component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,13 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-       <head>
+      <head>
         {/* Google Analytics */}
-        <script
-          async
+        <Script
+          strategy="afterInteractive" // Ensures the script loads after the page is interactive
           src="https://www.googletagmanager.com/gtag/js?id=G-RCQR3DG6HP"
-        ></script>
-        <script
+          id="google-analytics-script" // Add unique ID for the external script
+        />
+        <Script
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -42,6 +45,7 @@ export default function RootLayout({
               gtag('config', 'G-RCQR3DG6HP');
             `,
           }}
+          id="google-analytics-inline-script" // Add unique ID for the inline script
         />
       </head>
 
@@ -51,9 +55,9 @@ export default function RootLayout({
         <ThemeProvider> {/* Menambahkan ThemeProvider untuk mengakses tema */}
           <Navbar />
           {children} {/* Render konten utama aplikasi */}
-          
+
           {/* Menambahkan TestimonialSlider atau komponen lainnya */}
-          
+
           <Footer />
         </ThemeProvider>
       </body>
