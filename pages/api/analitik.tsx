@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 // import path from 'path';
 import process from 'process';
 
-const propertyId = '475903951';
+const propertyId = '475908908';
 
 // Tetapkan path kredensial
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');

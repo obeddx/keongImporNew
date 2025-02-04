@@ -118,21 +118,38 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {isAdmin && (
-            <Link
-              href="/send"
-              className={`relative px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${
-                pathname === "/send"
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md scale-105"
-                  : "text-gray-300"
-              }`}
-            >
-              Send Email
-              {pathname === "/send" && (
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
-              )}
-            </Link>
-          )}
+{isAdmin && (
+  <>
+    <Link
+      href="/send"
+      className={`relative px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${
+        pathname === "/send"
+          ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md scale-105"
+          : "text-gray-300"
+      }`}
+    >
+      Send Email
+      {pathname === "/send" && (
+        <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></span>
+      )}
+    </Link>
+
+    <Link
+      href="/analisa"
+      className={`relative px-3 py-2 transition duration-300 rounded-lg hover:bg-green-600 hover:text-white ${
+        pathname === "/analisa"
+          ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md scale-105"
+          : "text-gray-300"
+      }`}
+    >
+      Analisa
+      {pathname === "/analisa" && (
+        <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-teal-400 rounded-full"></span>
+      )}
+    </Link>
+  </>
+)}
+
         </div>
 
         {/* Dropdown Translate */}
