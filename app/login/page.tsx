@@ -25,10 +25,15 @@ const LoginPage = () => {
       setError("Username dan password wajib diisi.");
       return;
     }
+
     // Simulate login logic
     sessionStorage.setItem("isAdmin", "true");
+
+    // Trigger event agar Navbar.tsx langsung mendeteksi perubahan tanpa refresh
+    window.dispatchEvent(new Event("storage"));
+
     alert("Login berhasil!");
-    router.push("/");
+    router.replace("/"); // Pastikan navbar langsung diperbarui tanpa reload
   };
 
   return (

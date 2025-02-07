@@ -23,16 +23,26 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { toggleTheme, isDarkMode } = useContext(ThemeContext);
 
   useEffect(() => {
     setIsClient(true);
+
+    // Cek status admin saat pertama kali komponen dimuat
     const adminStatus = sessionStorage.getItem("isAdmin");
-    if (adminStatus === "true") {
-      setIsAdmin(true);
-    }
-    loadGoogleTranslate();
+    setIsAdmin(adminStatus === "true");
+
+    // Event listener untuk mendeteksi perubahan sessionStorage
+    const handleStorageChange = () => {
+      const updatedStatus = sessionStorage.getItem("isAdmin");
+      setIsAdmin(updatedStatus === "true");
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const navItems = [
@@ -45,9 +55,12 @@ export default function Navbar() {
 
   const handleLogout = () => {
     setIsAdmin(false);
+    sessionStorage.removeItem("isAdmin"); // Pastikan sessionStorage dihapus
     localStorage.removeItem("isAdmin");
+
     alert("Anda telah logout.");
-    router.push("/");
+
+    router.replace("/"); // Paksa re-render agar status navbar langsung berubah
   };
 
   const resetTranslate = () => {
@@ -91,6 +104,10 @@ export default function Navbar() {
     }
   };
 
+  useEffect(() => {
+    loadGoogleTranslate();
+  }, []);
+
   if (!isClient) return null;
 
   return (
@@ -112,9 +129,8 @@ export default function Navbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${
-                pathname === item.href ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md" : "text-gray-300"
-              }`}
+              className={`relative block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${pathname === item.href ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md" : "text-gray-300"
+                }`}
             >
               {item.label}
             </Link>
@@ -122,14 +138,23 @@ export default function Navbar() {
 
           {isAdmin && (
             <>
-              <Link href="/send" className="text-gray-300 hover:text-white">
+              <Link
+                href="/send"
+                className={`relative block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${pathname === "/send" ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md" : "text-gray-300"
+                  }`}
+              >
                 Send Email
               </Link>
-              <Link href="/analisa" className="text-gray-300 hover:text-white">
+              <Link
+                href="/analisa"
+                className={`relative block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${pathname === "/analisa" ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md" : "text-gray-300"
+                  }`}
+              >
                 Analisa
               </Link>
             </>
           )}
+
 
           {/* Dropdown Translate */}
           <div id="google_translate_element" className="mr-6"></div>

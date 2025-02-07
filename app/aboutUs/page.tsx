@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import { motion } from "framer-motion";
-import { client } from "../lib/sanityClient"; 
+import { client } from "../lib/sanityClient";
 import KeunggulanSection from "@/components/KeunggulanSection";
 import { useTheme } from '@/components/ThemeContext';
 
@@ -117,6 +117,30 @@ const AboutUsPage: React.FC = () => {
       >
         Toggle Theme
       </button>
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className={`text-2xl font-semibold mb-4 ${isDarkMode ? "text-white" : "text-black"}`}>
+          Kontak Kami
+        </h2>
+        <p className={`${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-2`}>
+          <strong>Alamat:</strong> Jl. Keong Sumber Makmur No. 10, Jakarta, Indonesia
+        </p>
+        <p className={`${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-2`}>
+          <strong>Email:</strong> info@keongsumbermakmur.com
+        </p>
+        <p className={`${isDarkMode ? "text-gray-300" : "text-gray-700"} mb-2`}>
+          <strong>Telepon:</strong> +62 812-3456-7890
+        </p>
+        <div className="mt-4">
+          <a
+            href="https://www.google.com/maps"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+          >
+            Lihat di Google Maps
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
