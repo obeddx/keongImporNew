@@ -15,6 +15,10 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
 
+    if (typeof username !== "string" || typeof password !== "string") {
+      return NextResponse.json({ error: "Data tidak valid!" }, { status: 400 });
+    }
+
     // Cari user berdasarkan username
     const user = await prisma.user.findUnique({
       where: { username },

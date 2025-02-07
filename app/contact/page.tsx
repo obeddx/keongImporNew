@@ -58,6 +58,7 @@ const ContactPageContent = () => {
           alert("Gagal mengirim pesan. Silakan coba lagi.");
         }
       } catch (error) {
+        console.error("Terjadi kesalahan:", error);
         alert("Terjadi kesalahan saat mengirim pesan.");
       }
     }

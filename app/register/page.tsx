@@ -34,8 +34,12 @@ const RegisterPage = () => {
 
       setSuccess("Registrasi berhasil! Silakan login.");
       setTimeout(() => router.push("/login"), 2000);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Terjadi kesalahan yang tidak diketahui.");
+      }
     }
   };
 
