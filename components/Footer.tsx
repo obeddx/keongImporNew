@@ -115,7 +115,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="mt-10 text-center text-gray-400">
-            <p>© 2025 PT. KEONG SUMBER MAKMUR. All rights reserved.</p>
+            <p>© 2025 PT. KEONG SUMBER MAKMUR. All rights reserved. obed love vane</p>
           </div>
         </div>
 
