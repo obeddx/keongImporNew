@@ -24,3 +24,11 @@ model Kontak {
 
   @@map("Kontak") // Nama tabel di database
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String 
+  password  String
+  createdAt DateTime @default(now())
+}
+

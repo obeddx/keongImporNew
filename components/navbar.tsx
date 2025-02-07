@@ -10,10 +10,7 @@ declare global {
   interface Window {
     google?: {
       translate?: {
-        TranslateElement: new (
-          options: object,
-          containerId: string
-        ) => void;
+        TranslateElement: new (options: object, containerId: string) => void;
       };
     };
     googleTranslateElementInit?: () => void;
@@ -31,7 +28,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setIsClient(true);
-    const adminStatus = localStorage.getItem("isAdmin");
+    const adminStatus = sessionStorage.getItem("isAdmin");
     if (adminStatus === "true") {
       setIsAdmin(true);
     }
@@ -46,12 +43,6 @@ export default function Navbar() {
     { label: "Article", href: "/article" },
   ];
 
-  const handleLogin = () => {
-    setIsAdmin(true);
-    localStorage.setItem("isAdmin", "true");
-    alert("Login berhasil sebagai admin!");
-  };
-
   const handleLogout = () => {
     setIsAdmin(false);
     localStorage.removeItem("isAdmin");
@@ -60,9 +51,7 @@ export default function Navbar() {
   };
 
   const resetTranslate = () => {
-    const selectElement = document.querySelector<HTMLSelectElement>(
-      ".goog-te-combo"
-    );
+    const selectElement = document.querySelector<HTMLSelectElement>(".goog-te-combo");
     if (selectElement) {
       selectElement.value = "en";
       selectElement.dispatchEvent(new Event("change"));
@@ -72,11 +61,10 @@ export default function Navbar() {
   const loadGoogleTranslate = () => {
     if (typeof window !== "undefined" && !window.google) {
       const script = document.createElement("script");
-      script.src =
-        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
       document.body.appendChild(script);
-  
+
       window.googleTranslateElementInit = () => {
         if (window.google?.translate) {
           new window.google.translate.TranslateElement(
@@ -90,11 +78,9 @@ export default function Navbar() {
             },
             "google_translate_element"
           );
-  
+
           const interval = setInterval(() => {
-            const banner = document.querySelector(
-              ".goog-te-banner-frame"
-            ) as HTMLIFrameElement | null;
+            const banner = document.querySelector(".goog-te-banner-frame") as HTMLIFrameElement | null;
             if (banner) {
               banner.style.display = "none";
               clearInterval(interval);
@@ -104,7 +90,7 @@ export default function Navbar() {
       };
     }
   };
-  
+
   if (!isClient) return null;
 
   return (
@@ -121,19 +107,13 @@ export default function Navbar() {
           ☰
         </button>
 
-        <div
-          className={`${
-            menuOpen ? "block" : "hidden"
-          } absolute md:static top-full left-0 w-full bg-gray-900 md:flex md:items-center space-y-2 md:space-y-0 md:space-x-6`}
-        >
+        <div className={`${menuOpen ? "block" : "hidden"} absolute md:static top-full left-0 w-full bg-gray-900 md:flex md:items-center space-y-2 md:space-y-0 md:space-x-6`}>
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={`relative block md:inline-block px-3 py-2 transition duration-300 rounded-lg hover:bg-blue-600 hover:text-white ${
-                pathname === item.href
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-                  : "text-gray-300"
+                pathname === item.href ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md" : "text-gray-300"
               }`}
             >
               {item.label}
@@ -154,24 +134,18 @@ export default function Navbar() {
           {/* Dropdown Translate */}
           <div id="google_translate_element" className="mr-6"></div>
 
-          <button
-            onClick={resetTranslate}
-            className="block md:inline-block px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition"
-          >
+          <button onClick={resetTranslate} className="block md:inline-block px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition">
             Bahasa Asli
           </button>
 
           <button
-            onClick={isAdmin ? handleLogout : handleLogin}
+            onClick={isAdmin ? handleLogout : () => router.push("/login")}
             className="block md:inline-block px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:scale-105 transition-transform duration-300 shadow-md"
           >
             {isAdmin ? "Logout" : "Login"}
           </button>
 
-          <button
-            onClick={toggleTheme}
-            className="block md:inline-block px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition"
-          >
+          <button onClick={toggleTheme} className="block md:inline-block px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition">
             {isDarkMode ? "Light Mode" : "Dark Mode"}
           </button>
         </div>
